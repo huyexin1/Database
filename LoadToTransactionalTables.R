@@ -55,15 +55,32 @@ Publications <- xmlSize(r)
 
 ################################################################################
 # Create Journal dataframe 
-Journals.df <- data.frame (
+create_journal_df <- function(){
+  Journals.df <- data.frame (
   Title = character(),
   ISOAbbreviation = character(),
   stringsAsFactors = F)
+}
+create_journal_df()
 
 # Insert records into journals dataframe 
-PMID <- xpathSApply(xmlDOM,"//Article",xmlAttrs)
-Title <- xpathSApply(xmlDOM,"//Title",xmlValue)
-ISOAbbreviation <- xpathSApply(xmlDOM,"//ISOAbbreviation",xmlValue)
+# get_values_from_xml <- function(field){
+#   PMID <- xpathSApply(xmlDOM,"//Article",xmlAttrs)
+#   Title <- xpathSApply(xmlDOM,"//Title",xmlValue)
+#   ISOAbbreviation <- xpathSApply(xmlDOM,"//ISOAbbreviation",xmlValue)
+# }
+get_Attrs_from_xml <- function(field){
+  xpathSApply(xmlDOM,field,xmlAttrs)
+}
+
+get_values_from_xml <- function(field){
+  xpathSApply(xmlDOM,field,xmlValue)
+}
+
+PMID <- get_Attrs_from_xml("//Article")
+Title <- get_values_from_xml("//Title")
+ISOAbbreviation <- get_values_from_xml("//ISOAbbreviation")
+
 for (i in 1:length(PMID)) {
   article <- r[[i]]
   if (xmlName(article[[1]][[1]][[1]]) == "ISSN") {
@@ -164,7 +181,6 @@ names(Month_num) <- Month_abb
 
 # Process date field for articles 
 PMID <- xpathSApply(xmlDOM,"//Article",xmlAttrs)
-Pub_Date <- xpathSApply(xmlDOM,"//PubDate",xmlValue)
 for (i in 1:length(PMID)) {
   id <- PMID[i]
   publish_date  <- str_replace_all(Pub_Date[i], fixed(" "), "")
@@ -236,6 +252,7 @@ for (i in 1:length(PMID)) {
     } else {
       month <- substr(publish_date,5, 6)
       day <- substr(publish_date, 7, 8)
+    }
   } 
   
   else if (str_length(publish_date) == 11) {
@@ -275,7 +292,7 @@ for (i in 1:length(PMID)) {
   
   else if (str_length(publish_date) == 8){
     year <- substr(publish_date,1, 4)
-    if (substr(publish_date,5, 10) == "fall") {
+    if (substr(publish_date,5, 8) == "fall") {
       month <- "08"
       day <- "01"
     } else {
@@ -293,6 +310,7 @@ for (i in 1:length(PMID)) {
   Articles.df[i,]$Publish_month <- month
   Articles.df[i,]$Publish_day <- day
 }
+
 
 # Use PMID to find rows that with date field need to be changed manually
 # PMID (8769, 21940, 26215, 26216) need to be changed manually
