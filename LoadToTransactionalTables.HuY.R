@@ -64,11 +64,6 @@ create_journal_df <- function(){
 create_journal_df()
 
 # Insert records into journals dataframe 
-# get_values_from_xml <- function(field){
-#   PMID <- xpathSApply(xmlDOM,"//Article",xmlAttrs)
-#   Title <- xpathSApply(xmlDOM,"//Title",xmlValue)
-#   ISOAbbreviation <- xpathSApply(xmlDOM,"//ISOAbbreviation",xmlValue)
-# }
 get_Attrs_from_xml <- function(field){
   xpathSApply(xmlDOM,field,xmlAttrs)
 }
